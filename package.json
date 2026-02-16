@@ -1,0 +1,17 @@
+{
+  "name": "inventory-system",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm run build --prefix server && npm run build --prefix client",
+    "start": "npm run start --prefix server",
+    "lint": "npm run lint --prefix server && npm run lint --prefix client",
+    "pack": "node scripts/create-zip.js"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "concurrently": "^8.2.2"
+  }
+}
