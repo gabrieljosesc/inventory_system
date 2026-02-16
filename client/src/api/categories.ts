@@ -1,6 +1,6 @@
 import { apiFetch } from './client.js';
 
-export interface Category {
+export interface Category extends Record<string, unknown> {
   _id: string;
   name: string;
   description?: string;

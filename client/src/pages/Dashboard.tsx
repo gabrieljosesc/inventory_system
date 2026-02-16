@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext.js';
@@ -36,7 +35,9 @@ export function Dashboard() {
   return (
     <>
       <h1>Dashboard</h1>
-      <p className="page-description">Overview of inventory and recent activity.</p>
+      <p className="page-description">
+        Overview of inventory and recent activity.
+      </p>
       <div className="stats-grid">
         <div className="stat-card">
           <p className="stat-value">{items.length}</p>
@@ -54,7 +55,9 @@ export function Dashboard() {
           {expiringSoon.length > 0 && (
             <ul className="section-list">
               {expiringSoon.slice(0, 5).map((i) => (
-                <li key={i._id}><Link to={`/items/${i._id}`}>{i.name}</Link></li>
+                <li key={i._id}>
+                  <Link to={`/items/${i._id}`}>{i.name}</Link>
+                </li>
               ))}
             </ul>
           )}
@@ -66,10 +69,12 @@ export function Dashboard() {
         ) : (
           <ul style={{ margin: 0, paddingLeft: '1.25rem' }}>
             {movements.slice(0, 5).map((m) => {
-              const item = typeof m.itemId === 'object' ? m.itemId?.name : m.itemId;
+              const item =
+                typeof m.itemId === 'object' ? m.itemId?.name : m.itemId;
               return (
                 <li key={m._id}>
-                  {m.type === 'in' ? '+' : '-'}{m.quantity} {item} {m.reason ? `(${m.reason})` : ''}
+                  {m.type === 'in' ? '+' : '-'}
+                  {m.quantity} {item} {m.reason ? `(${m.reason})` : ''}
                 </li>
               );
             })}

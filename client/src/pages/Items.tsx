@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext.js';
@@ -47,7 +47,14 @@ export function Items() {
   });
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ['items', { categoryId: categoryFilter || undefined, lowStock: lowStockOnly, search: search.trim() || undefined }],
+    queryKey: [
+      'items',
+      {
+        categoryId: categoryFilter || undefined,
+        lowStock: lowStockOnly,
+        search: search.trim() || undefined,
+      },
+    ],
     queryFn: () =>
       getItems(token!, {
         ...(categoryFilter ? { categoryId: categoryFilter } : {}),
@@ -58,19 +65,43 @@ export function Items() {
   });
 
   const createMut = useMutation({
-    mutationFn: (data: Parameters<typeof createItem>[1]) => createItem(token!, data),
+    mutationFn: (data: Parameters<typeof createItem>[1]) =>
+      createItem(token!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
       setAdding(false);
-      setForm({ name: '', categoryId: '', unit: 'piece', quantity: 0, minQuantity: 0, maxQuantity: '', supplier: '', expiryDate: '' });
+      setForm({
+        name: '',
+        categoryId: '',
+        unit: 'piece',
+        quantity: 0,
+        minQuantity: 0,
+        maxQuantity: '',
+        supplier: '',
+        expiryDate: '',
+      });
       toast.success('Item created');
     },
     onError: (err: Error) => toast.error(err.message),
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Item> }) =>
-      updateItem(token!, id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: {
+        name: string;
+        categoryId: string;
+        unit: string;
+        quantity: number;
+        minQuantity: number;
+        maxQuantity?: number;
+        supplier?: string;
+        expiryDate?: string;
+      };
+    }) => updateItem(token!, id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
       setEditing(null);
@@ -92,13 +123,18 @@ export function Items() {
     setEditing(item);
     setForm({
       name: item.name,
-      categoryId: typeof item.categoryId === 'object' ? item.categoryId._id : item.categoryId,
+      categoryId:
+        typeof item.categoryId === 'object'
+          ? item.categoryId._id
+          : item.categoryId,
       unit: item.unit,
       quantity: item.quantity,
       minQuantity: item.minQuantity,
       maxQuantity: item.maxQuantity ?? '',
       supplier: item.supplier ?? '',
-      expiryDate: item.expiryDate ? new Date(item.expiryDate).toISOString().slice(0, 10) : '',
+      expiryDate: item.expiryDate
+        ? new Date(item.expiryDate).toISOString().slice(0, 10)
+        : '',
     });
   };
 
@@ -110,7 +146,8 @@ export function Items() {
       unit: form.unit,
       quantity: form.quantity,
       minQuantity: form.minQuantity,
-      maxQuantity: form.maxQuantity === '' ? undefined : Number(form.maxQuantity),
+      maxQuantity:
+        form.maxQuantity === '' ? undefined : Number(form.maxQuantity),
       supplier: form.supplier || undefined,
       expiryDate: form.expiryDate || undefined,
     });
@@ -127,7 +164,8 @@ export function Items() {
         unit: form.unit,
         quantity: form.quantity,
         minQuantity: form.minQuantity,
-        maxQuantity: form.maxQuantity === '' ? undefined : Number(form.maxQuantity),
+        maxQuantity:
+          form.maxQuantity === '' ? undefined : Number(form.maxQuantity),
         supplier: form.supplier || undefined,
         expiryDate: form.expiryDate || undefined,
       },
@@ -148,7 +186,8 @@ export function Items() {
   };
 
   const handleDelete = (item: Item) => {
-    if (window.confirm(`Delete item "${item.name}"?`)) deleteMut.mutate(item._id);
+    if (window.confirm(`Delete item "${item.name}"?`))
+      deleteMut.mutate(item._id);
   };
 
   const categoryName = (item: Item) =>
@@ -211,12 +250,19 @@ export function Items() {
             type="button"
             className="btn"
             onClick={() =>
-              lowStockOnly ? setSearchParams({}) : setSearchParams({ lowStock: 'true' })
+              lowStockOnly
+                ? setSearchParams({})
+                : setSearchParams({ lowStock: 'true' })
             }
           >
             {lowStockOnly ? 'Show all' : 'Low stock only'}
           </button>
-          <button type="button" className="btn" onClick={handleExport} style={{ marginLeft: 'auto' }}>
+          <button
+            type="button"
+            className="btn"
+            onClick={handleExport}
+            style={{ marginLeft: 'auto' }}
+          >
             Export CSV
           </button>
         </div>
@@ -235,7 +281,9 @@ export function Items() {
               <select
                 className="select"
                 value={form.categoryId}
-                onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, categoryId: e.target.value }))
+                }
                 required
               >
                 <option value="">Select</option>
@@ -251,7 +299,9 @@ export function Items() {
               <select
                 className="select"
                 value={form.unit}
-                onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, unit: e.target.value }))
+                }
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -265,14 +315,18 @@ export function Items() {
               type="number"
               min={0}
               value={form.quantity}
-              onChange={(e) => setForm((f) => ({ ...f, quantity: Number(e.target.value) }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, quantity: Number(e.target.value) }))
+              }
             />
             <Input
               label="Min quantity"
               type="number"
               min={0}
               value={form.minQuantity}
-              onChange={(e) => setForm((f) => ({ ...f, minQuantity: Number(e.target.value) }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, minQuantity: Number(e.target.value) }))
+              }
             />
             <Input
               label="Max quantity (optional)"
@@ -282,25 +336,34 @@ export function Items() {
               onChange={(e) =>
                 setForm((f) => ({
                   ...f,
-                  maxQuantity: e.target.value === '' ? '' : Number(e.target.value),
+                  maxQuantity:
+                    e.target.value === '' ? '' : Number(e.target.value),
                 }))
               }
             />
             <Input
               label="Supplier (optional)"
               value={form.supplier}
-              onChange={(e) => setForm((f) => ({ ...f, supplier: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, supplier: e.target.value }))
+              }
             />
             <Input
               label="Expiry date (optional)"
               type="date"
               value={form.expiryDate}
-              onChange={(e) => setForm((f) => ({ ...f, expiryDate: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, expiryDate: e.target.value }))
+              }
             />
             <Button type="submit" disabled={createMut.isPending}>
               Save
             </Button>
-            <Button type="button" onClick={() => setAdding(false)} style={{ marginLeft: '0.5rem' }}>
+            <Button
+              type="button"
+              onClick={() => setAdding(false)}
+              style={{ marginLeft: '0.5rem' }}
+            >
               Cancel
             </Button>
           </form>
@@ -320,7 +383,9 @@ export function Items() {
               <select
                 className="select"
                 value={form.categoryId}
-                onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, categoryId: e.target.value }))
+                }
                 required
               >
                 {categories.map((c) => (
@@ -335,7 +400,9 @@ export function Items() {
               <select
                 className="select"
                 value={form.unit}
-                onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, unit: e.target.value }))
+                }
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -349,14 +416,18 @@ export function Items() {
               type="number"
               min={0}
               value={form.quantity}
-              onChange={(e) => setForm((f) => ({ ...f, quantity: Number(e.target.value) }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, quantity: Number(e.target.value) }))
+              }
             />
             <Input
               label="Min quantity"
               type="number"
               min={0}
               value={form.minQuantity}
-              onChange={(e) => setForm((f) => ({ ...f, minQuantity: Number(e.target.value) }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, minQuantity: Number(e.target.value) }))
+              }
             />
             <Input
               label="Max quantity (optional)"
@@ -366,20 +437,25 @@ export function Items() {
               onChange={(e) =>
                 setForm((f) => ({
                   ...f,
-                  maxQuantity: e.target.value === '' ? '' : Number(e.target.value),
+                  maxQuantity:
+                    e.target.value === '' ? '' : Number(e.target.value),
                 }))
               }
             />
             <Input
               label="Supplier (optional)"
               value={form.supplier}
-              onChange={(e) => setForm((f) => ({ ...f, supplier: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, supplier: e.target.value }))
+              }
             />
             <Input
               label="Expiry date (optional)"
               type="date"
               value={form.expiryDate}
-              onChange={(e) => setForm((f) => ({ ...f, expiryDate: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, expiryDate: e.target.value }))
+              }
             />
             <Button type="submit" disabled={updateMut.isPending}>
               Update
@@ -404,7 +480,9 @@ export function Items() {
               {
                 key: 'name',
                 header: 'Name',
-                render: (row) => <Link to={`/items/${row._id}`}>{row.name}</Link>,
+                render: (row) => (
+                  <Link to={`/items/${row._id}`}>{row.name}</Link>
+                ),
               },
               { key: 'unit', header: 'Unit' },
               { key: 'quantity', header: 'Quantity' },
@@ -420,7 +498,10 @@ export function Items() {
                 render: (row) => (
                   <>
                     <Button onClick={() => openEdit(row)}>Edit</Button>
-                    <Button onClick={() => handleDelete(row)} style={{ marginLeft: '0.5rem' }}>
+                    <Button
+                      onClick={() => handleDelete(row)}
+                      style={{ marginLeft: '0.5rem' }}
+                    >
                       Delete
                     </Button>
                   </>

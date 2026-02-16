@@ -1,6 +1,6 @@
 import { apiFetch } from './client.js';
 
-export interface Item {
+export interface Item extends Record<string, unknown> {
   _id: string;
   name: string;
   categoryId: { _id: string; name: string } | string;
@@ -75,7 +75,8 @@ export function deleteItem(token: string, id: string): Promise<void> {
   return apiFetch(`/api/items/${id}`, { method: 'DELETE', token });
 }
 
-const getBaseUrl = () => (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '') || '';
+const getBaseUrl = () =>
+  (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '') || '';
 
 export async function exportItemsCsv(
   token: string,
@@ -86,7 +87,9 @@ export async function exportItemsCsv(
   if (params?.lowStock) q.set('lowStock', 'true');
   if (params?.search?.trim()) q.set('search', params.search.trim());
   const url = `${getBaseUrl()}/api/items/export${q.toString() ? `?${q}` : ''}`;
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   if (!res.ok) throw new Error('Export failed');
   const blob = await res.blob();
   const a = document.createElement('a');

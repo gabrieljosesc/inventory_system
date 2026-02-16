@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext.js';
 import { getUsers, createUser, type ApiUser } from '../api/users.js';
@@ -13,7 +13,12 @@ export function Users() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ email: '', password: '', name: '', role: 'staff' as 'admin' | 'staff' });
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    name: '',
+    role: 'staff' as 'admin' | 'staff',
+  });
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
@@ -22,8 +27,12 @@ export function Users() {
   });
 
   const createMut = useMutation({
-    mutationFn: (data: { email: string; password: string; name: string; role?: 'admin' | 'staff' }) =>
-      createUser(token!, data),
+    mutationFn: (data: {
+      email: string;
+      password: string;
+      name: string;
+      role?: 'admin' | 'staff';
+    }) => createUser(token!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setAdding(false);
@@ -45,7 +54,12 @@ export function Users() {
     <>
       <div className="page-head">
         <h1>Users</h1>
-        <Button onClick={() => { setAdding(true); setForm({ email: '', password: '', name: '', role: 'staff' }); }}>
+        <Button
+          onClick={() => {
+            setAdding(true);
+            setForm({ email: '', password: '', name: '', role: 'staff' });
+          }}
+        >
           Add user
         </Button>
       </div>
@@ -65,14 +79,18 @@ export function Users() {
               label="Email"
               type="email"
               value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, email: e.target.value }))
+              }
               required
             />
             <Input
               label="Password"
               type="password"
               value={form.password}
-              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, password: e.target.value }))
+              }
               required
               minLength={6}
             />
@@ -87,19 +105,34 @@ export function Users() {
               <select
                 className="select"
                 value={form.role}
-                onChange={(e) => setForm((f) => ({ ...f, role: e.target.value as 'admin' | 'staff' }))}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    role: e.target.value as 'admin' | 'staff',
+                  }))
+                }
               >
                 <option value="staff">Staff</option>
                 <option value="admin">Admin</option>
               </select>
             </div>
-            <Button type="submit" disabled={createMut.isPending}>Create</Button>
-            <Button type="button" onClick={() => setAdding(false)} style={{ marginLeft: '0.5rem' }}>Cancel</Button>
+            <Button type="submit" disabled={createMut.isPending}>
+              Create
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setAdding(false)}
+              style={{ marginLeft: '0.5rem' }}
+            >
+              Cancel
+            </Button>
           </form>
         </Card>
       )}
       <Card>
-        {isLoading ? <p>Loading...</p> : (
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
           <Table<ApiUser>
             keyField="_id"
             columns={[

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext.js';
@@ -19,12 +18,15 @@ export function Reorder() {
   const categoryName = (item: Item) =>
     typeof item.categoryId === 'object' ? item.categoryId?.name : '-';
 
-  const reorderQty = (item: Item) => Math.max(0, (item.minQuantity ?? 0) - item.quantity + 1);
+  const reorderQty = (item: Item) =>
+    Math.max(0, (item.minQuantity ?? 0) - item.quantity + 1);
 
   return (
     <>
       <h1>Reorder list</h1>
-      <p className="page-description">Items at or below minimum quantity. Order more to avoid stockouts.</p>
+      <p className="page-description">
+        Items at or below minimum quantity. Order more to avoid stockouts.
+      </p>
       <Card>
         {isLoading ? (
           <p>Loading...</p>
@@ -37,7 +39,9 @@ export function Reorder() {
               {
                 key: 'name',
                 header: 'Item',
-                render: (row) => <Link to={`/items/${row._id}`}>{row.name}</Link>,
+                render: (row) => (
+                  <Link to={`/items/${row._id}`}>{row.name}</Link>
+                ),
               },
               { key: 'unit', header: 'Unit' },
               { key: 'quantity', header: 'Current' },

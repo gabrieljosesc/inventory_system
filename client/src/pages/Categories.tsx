@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext.js';
 import {
@@ -43,8 +43,13 @@ export function Categories() {
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { name?: string; description?: string } }) =>
-      updateCategory(token!, id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { name?: string; description?: string };
+    }) => updateCategory(token!, id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       setEditing(null);
@@ -78,7 +83,10 @@ export function Categories() {
   const handleSubmitEdit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editing) return;
-    updateMut.mutate({ id: editing._id, data: { name, description: description || undefined } });
+    updateMut.mutate({
+      id: editing._id,
+      data: { name, description: description || undefined },
+    });
   };
 
   const handleDelete = (c: Category) => {
@@ -89,18 +97,43 @@ export function Categories() {
     <>
       <div className="page-head">
         <h1>Categories</h1>
-        <Button onClick={() => { setAdding(true); setEditing(null); setName(''); setDescription(''); }}>
+        <Button
+          onClick={() => {
+            setAdding(true);
+            setEditing(null);
+            setName('');
+            setDescription('');
+          }}
+        >
           Add category
         </Button>
       </div>
-      <p className="page-description">Group items by type (e.g. Dairy, Beverages). Delete only when no items use the category.</p>
+      <p className="page-description">
+        Group items by type (e.g. Dairy, Beverages). Delete only when no items
+        use the category.
+      </p>
       {adding && (
         <Card title="New category">
           <form onSubmit={handleSubmitAdd}>
-            <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
-            <Input label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-            <Button type="submit" disabled={createMut.isPending}>Save</Button>
-            <Button type="button" onClick={() => setAdding(false)} style={{ marginLeft: '0.5rem' }}>
+            <Input
+              label="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              label="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <Button type="submit" disabled={createMut.isPending}>
+              Save
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setAdding(false)}
+              style={{ marginLeft: '0.5rem' }}
+            >
               Cancel
             </Button>
           </form>
@@ -109,10 +142,29 @@ export function Categories() {
       {editing && (
         <Card title="Edit category">
           <form onSubmit={handleSubmitEdit}>
-            <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
-            <Input label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-            <Button type="submit" disabled={updateMut.isPending}>Update</Button>
-            <Button type="button" onClick={() => { setEditing(null); setName(''); setDescription(''); }} style={{ marginLeft: '0.5rem' }}>
+            <Input
+              label="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              label="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <Button type="submit" disabled={updateMut.isPending}>
+              Update
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setEditing(null);
+                setName('');
+                setDescription('');
+              }}
+              style={{ marginLeft: '0.5rem' }}
+            >
               Cancel
             </Button>
           </form>
@@ -133,7 +185,10 @@ export function Categories() {
                 render: (row) => (
                   <>
                     <Button onClick={() => openEdit(row)}>Edit</Button>
-                    <Button onClick={() => handleDelete(row)} style={{ marginLeft: '0.5rem' }}>
+                    <Button
+                      onClick={() => handleDelete(row)}
+                      style={{ marginLeft: '0.5rem' }}
+                    >
                       Delete
                     </Button>
                   </>

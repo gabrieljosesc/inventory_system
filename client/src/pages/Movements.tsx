@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext.js';
-import { getMovements, exportMovementsCsv, type StockMovement } from '../api/movements.js';
+import {
+  getMovements,
+  exportMovementsCsv,
+  type StockMovement,
+} from '../api/movements.js';
 import { useToast } from '../context/ToastContext.js';
 import { Card } from '../components/Card.js';
 
@@ -12,8 +16,16 @@ export function Movements() {
   const [to, setTo] = useState('');
 
   const { data: movements = [], isLoading } = useQuery({
-    queryKey: ['movements', { limit: 100, from: from || undefined, to: to || undefined }],
-    queryFn: () => getMovements(token!, { limit: 100, ...(from ? { from } : {}), ...(to ? { to } : {}) }),
+    queryKey: [
+      'movements',
+      { limit: 100, from: from || undefined, to: to || undefined },
+    ],
+    queryFn: () =>
+      getMovements(token!, {
+        limit: 100,
+        ...(from ? { from } : {}),
+        ...(to ? { to } : {}),
+      }),
     enabled: !!token,
   });
 
@@ -22,7 +34,10 @@ export function Movements() {
 
   const handleExport = async () => {
     try {
-      await exportMovementsCsv(token!, { ...(from ? { from } : {}), ...(to ? { to } : {}) });
+      await exportMovementsCsv(token!, {
+        ...(from ? { from } : {}),
+        ...(to ? { to } : {}),
+      });
       toast.success('Export started');
     } catch {
       toast.error('Export failed');
@@ -32,7 +47,9 @@ export function Movements() {
   return (
     <>
       <h1>Movements</h1>
-      <p className="page-description">Stock in and out history. Filter by date and export to CSV.</p>
+      <p className="page-description">
+        Stock in and out history. Filter by date and export to CSV.
+      </p>
       <Card>
         <div className="filters-bar">
           <label>From date</label>
@@ -79,7 +96,10 @@ export function Movements() {
                     <td>{new Date(m.createdAt).toLocaleString()}</td>
                     <td>{itemName(m)}</td>
                     <td>{m.type}</td>
-                    <td>{m.type === 'in' ? '+' : '-'}{m.quantity}</td>
+                    <td>
+                      {m.type === 'in' ? '+' : '-'}
+                      {m.quantity}
+                    </td>
                     <td>{m.reason ?? '-'}</td>
                   </tr>
                 ))}
